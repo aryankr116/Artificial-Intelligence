@@ -1,0 +1,56 @@
+class VacuumEnvironment:
+    def __init__(self):
+        # Initialize rooms as dirty (True means dirty, False means clean)
+        self.rooms = {'A': True, 'B': True}
+        self.agent_location = 'A'
+
+    def is_dirty(self, location):
+        return self.rooms[location]
+
+    def clean(self, location):
+        self.rooms[location] = False
+
+    def move_agent(self, location):
+        self.agent_location = location
+
+    def __str__(self):
+        return f"Rooms status: {self.rooms}, Agent location: {self.agent_location}"
+
+
+class VacuumAgent:
+    def __init__(self, environment):
+        self.environment = environment
+
+    def perceive(self):
+        location = self.environment.agent_location
+        dirty = self.environment.is_dirty(location)
+        return location, dirty
+
+    def act(self):
+        location, dirty = self.perceive()
+
+        if dirty:
+            print(f"Cleaning room {location}")
+            self.environment.clean(location)
+        else:
+            # Move to the other room
+            new_location = 'B' if location == 'A' else 'A'
+            print(f"Moving from {location} to {new_location}")
+            self.environment.move_agent(new_location)
+
+
+def run_vacuum_agent(steps=10):
+    env = VacuumEnvironment()
+    agent = VacuumAgent(env)
+
+    for step in range(steps):
+        print(f"Step {step + 1}: {env}")
+        agent.act()
+        # Stop early if all rooms are clean
+        if not env.is_dirty('A') and not env.is_dirty('B'):
+            print("All rooms are clean! Stopping.")
+            break
+
+
+if __name__ == "__main__":
+    run_vacuum_agent()
